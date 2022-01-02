@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run pylint
-        run: docker-compose run testing pylint bot --fail-under=8.5| tee -a testing/pylint.txt
+        run: docker-compose run testing pylint bot --fail-under=8| tee -a testing/pylint.txt
       - name: Upload pylint
         uses: actions/upload-artifact@v2
         with:
