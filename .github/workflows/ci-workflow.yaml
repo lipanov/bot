@@ -1,18 +1,23 @@
 name: Tests on any push and merge event
-on: push
+on: 
+  push:
+    branches: 
+      - '**'
+  pull_request:
+    types: [closed]
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-docker:
+    if: github.event_name=='push' || github.event.pull_request.merged == true
+    runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Run build
         run: docker-compose build
-      - name: Show images
-        run: docker images
-
   pytest:
-    runs-on: ubuntu-latest
+    needs: [build-docker]
+    runs-on: [ubuntu-latest]
     steps:
+      - uses: actions/checkout@v2
       - name: Run pytest
         run: docker-compose run testing pytest --cov=bot --junitxml=testing/pytest.report.xml
       - name: Upload pytest.report
@@ -22,11 +27,12 @@ jobs:
           path: testing/pytest.report.xml
 
   pylint:
-    runs-on: ubuntu-latest
+    needs: [build-docker]
+    runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Run pylint
-        run: docker-compose run testing pylint bot --threshold 8.5| tee -a testing/pylint.txt
+        run: docker-compose run testing pylint bot --fail-under=8.5| tee -a testing/pylint.txt
       - name: Upload pylint
         uses: actions/upload-artifact@v2
         with:
@@ -34,7 +40,8 @@ jobs:
           path: testing/pylint.txt
 
   mypy:
-    runs-on: ubuntu-latest
+    needs: [build-docker]
+    runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Run mypy
