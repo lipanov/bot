@@ -41,7 +41,7 @@ jobs:
           pip install pylint
       - name: Analysing the code with pylint
         run: |
-          pylint `ls -R|grep .py$|xargs` --fail-under=8| tee -a testing/pylint.txt
+          pylint bot --fail-under=8| tee -a testing/pylint.txt
       - name: Upload pylint
         uses: actions/upload-artifact@v2
         with:
