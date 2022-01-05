@@ -1,14 +1,17 @@
+"""
+The basis for working with a telegram.
+Commands are registered to which the bot will respond.
+
+DO NOT USE FOR BASIC LOGIC.
+"""
 import logging
-import re
 from asyncio import get_event_loop
 
 from aiogram import executor
-from aiogram.types import InlineQuery, Message, ContentTypes
+from aiogram.types import Message
 from asyncpgsa import pg
 
-from DAO import UserDAO
 from configs import DataBaseConfig
-from constants import CACHE_TIME
 from misc import dp
 
 
@@ -16,7 +19,10 @@ logging.basicConfig(level=logging.INFO)
 
 
 @dp.message_handler()
-async def echo(message: Message):
+async def echo(message: Message) -> None:
+    """
+    :param message: Telegram message
+    """
     await message.answer(message.text)
 
 

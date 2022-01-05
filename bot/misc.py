@@ -1,3 +1,6 @@
+"""
+Connecting to a bot by configuration
+"""
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 

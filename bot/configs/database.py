@@ -1,3 +1,6 @@
+"""
+Postgres database connection
+"""
 from pydantic import BaseSettings, Field, SecretStr
 
 
