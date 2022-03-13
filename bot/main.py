@@ -13,7 +13,14 @@ from asyncpgsa import pg
 
 from configs import DataBaseConfig
 from misc import dp
+from aiogram import Bot, types
+from aiogram.dispatcher import Dispatcher
+from aiogram.utils import executor
 
+from config import TOKEN
+
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,6 +44,51 @@ async def init_connection():
         min_size=5,
         max_size=10
     )
+
+
+def obl_id(id_):
+    d = {
+        0: 'Нет',
+        1: 'Да',
+    }
+    return d[id_]
+
+
+def id_obl(id_):
+    d = {
+        'Нет': 0,
+        'Да': 1,
+    }
+    return d[id_]
+
+
+def obl_names():
+    return ['Да', 'Нет']
+
+
+def obl_con_obl_list():
+    return [[None, 0], [0, 1]]
+
+
+@dp.message_handler(lambda message: types.Message)
+async def show_que(message: types.Message):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    for i in obl_con_obl_list():
+        buttons = [obl_id(i[1])]
+        keyboard.add(*buttons)
+    await message.answer("кк", reply_markup=keyboard)
+
+
+@dp.message_handler(lambda message: message.text == "Да")
+async def show_yes_menu(message: types.Message):
+    #Пользователя устроил ответ => ДА заносится в бд
+    pass
+
+
+@dp.message_handler(lambda message: message.text == "Нет")
+async def show_no_menu(message: types.Message):
+    #Пользователя не устроил ответ => НЕТ заносится в бд
+    pass
 
 
 if __name__ == '__main__':
