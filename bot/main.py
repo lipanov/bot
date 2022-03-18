@@ -91,6 +91,11 @@ async def show_no_menu(message: types.Message):
     pass
 
 
+@dp.message_handler(commands=['find'])
+async def test(msg: types.Message):
+    find(msg.text)
+
+
 if __name__ == '__main__':
     event_loop = get_event_loop()
     event_loop.run_until_complete(init_connection())
