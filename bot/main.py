@@ -6,21 +6,14 @@ DO NOT USE FOR BASIC LOGIC.
 """
 import logging
 from asyncio import get_event_loop
+from asyncpgsa import pg
+from misc import dp
+from configs import DataBaseConfig
 
 from aiogram import executor
-from aiogram.types import Message
-from asyncpgsa import pg
-
-from configs import DataBaseConfig
-from misc import dp
 from aiogram import Bot, types
+from aiogram.types import Message
 from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-
-from config import TOKEN
-
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -45,7 +38,7 @@ async def init_connection():
         max_size=10
     )
 
-
+#Имитатор бд############################
 def obl_id(id_):
     d = {
         0: 'Нет',
@@ -68,7 +61,7 @@ def obl_names():
 
 def obl_con_obl_list():
     return [[None, 0], [0, 1]]
-
+########################################
 
 @dp.message_handler(lambda message: types.Message)
 async def show_que(message: types.Message):
