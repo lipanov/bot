@@ -7,7 +7,9 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    DateTime
+    Boolean,
+    DateTime,
+    ForeignKey
 )
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 
@@ -37,3 +39,27 @@ class User(Base):
     """
     tg_id = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
+
+
+class QuestionAnswer(Base):
+    """
+    Question-Answer class for recording all questions and answers of the bot.
+    Contains:
+        question
+        answer
+    """
+    question = Column(String, nullable=False)
+    answer = Column(String, nullable=False)
+
+
+class SessionLog(Base):
+    """
+    Session log class for recording logs of user interaction with the bot.
+    Contains:
+        user_id - id of the user, who interacts with the bot, from User table
+        algorithm - key of the algorithm, that gave answer to the user
+        successful - answer evaluation by the user
+    """
+    user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
+    algorithm = Column(String, nullable=False)
+    successful = Column(Boolean, nullable=False)
