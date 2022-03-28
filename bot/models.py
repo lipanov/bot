@@ -63,3 +63,7 @@ class SessionLog(Base):
     user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     algorithm = Column(String, nullable=False)
     successful = Column(Boolean, nullable=False)
+
+
+class Admin(Base):
+    user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
