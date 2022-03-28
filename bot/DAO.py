@@ -11,7 +11,8 @@ from sqlalchemy import sql
 from models import (
     User,
     QuestionAnswer,
-    SessionLog
+    SessionLog,
+    Admin
 )
 
 
@@ -124,3 +125,8 @@ class QuestionAnswerDAO(BaseDAO):
 class SessionLogDAO(BaseDAO):
     def __init__(self) -> None:
         self.model = SessionLog
+
+
+class AdminDAO(BaseDAO):
+    def __init__(self) -> None:
+        self.model = Admin
