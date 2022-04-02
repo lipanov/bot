@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message
 
 from misc import bot
-from keyboards import answeringKeyboard
+from keyboards import answeringKeyboard, ReplyKeyboardRemove
 
 from DAO import UserDAO, SessionLogDAO
 from qa_recognition import router
@@ -56,7 +56,7 @@ async def rate(message: Message, state: FSMContext):
     if record != None:
         user = dict(record)
 
-        await bot.send_message(message.from_user.id, "Спасибо за вашу оценку!")
+        await bot.send_message(message.from_user.id, "Спасибо за вашу оценку", reply_markup=ReplyKeyboardRemove())
 
         async with state.proxy() as data:
             user_id = user["User_id"]

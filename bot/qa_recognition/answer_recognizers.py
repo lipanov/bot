@@ -19,7 +19,7 @@ class AAlgorithmAnswerRecognizer(AnswerRecognizer):
 
 
     def MIN_ANSWER_CHANCE(self) -> float:
-        return 0.6
+        return 0.5
 
 
     def recognize_answers(self, question : str, qaPairs : List[QAPair]) -> List[Answer]:
@@ -46,7 +46,7 @@ class BAlgorithmAnswerRecognizer(AnswerRecognizer):
 
 
     def MIN_TAG_SIMILARITY(self) -> float:
-        return 0.5
+        return 0.69
 
 
     def recognize_answers(self, question : str, qaPairs : List[QAPair]) -> List[Answer]:
@@ -60,8 +60,9 @@ class BAlgorithmAnswerRecognizer(AnswerRecognizer):
 
             for targetTag in targetTags:
                 for questionTag in questionTags:
-                    if calculateStringsJakkardsCoefficent(targetTag, questionTag) > self.MIN_TAG_SIMILARITY():
-                        similarTagsCount += 1
+                    if len(targetTag) > 1 and len(questionTag) > 1:
+                        if calculateStringsJakkardsCoefficent(targetTag, questionTag) > self.MIN_TAG_SIMILARITY():
+                            similarTagsCount += 1
             
             if similarTagsCount >= lastSimilarTagsCount:
                 coefficent = calculateJakkardsCoefficent(len(targetTags), len(questionTags), similarTagsCount)
@@ -78,7 +79,7 @@ class CAlgorithmAnswerRecognizer(AnswerRecognizer):
 
 
     def MIN_TAG_SIMILARITY(self):
-        return 0.5
+        return 0.69
 
 
     def MIN_ANSWER_SIMILARITY(self) -> float:
@@ -96,8 +97,9 @@ class CAlgorithmAnswerRecognizer(AnswerRecognizer):
 
             for targetTag in targetTags:
                 for questionTag in questionTags:
-                    if calculateStringsJakkardsCoefficent(targetTag, questionTag) > self.MIN_TAG_SIMILARITY():
-                        similarTagsCount += 1
+                    if len(targetTag) > 1 and len(questionTag) > 1:
+                        if calculateStringsJakkardsCoefficent(targetTag, questionTag) > self.MIN_TAG_SIMILARITY():
+                            similarTagsCount += 1
 
             coefficent = calculateJakkardsCoefficent(len(targetTags), len(questionTags), similarTagsCount)
             
@@ -119,11 +121,11 @@ class DAlgorithmAnswerRecognizer(AnswerRecognizer):
 
 
     def MIN_TAG_SIMILARITY(self) -> float:
-        return 0.5
+        return 0.69
         
 
     def MIN_ANSWER_SIMILARITY(self) -> float:
-        return 0.7
+        return 0.5
 
 
     def recognize_answers(self, question : str, qaPairs : List[QAPair]) -> List[Answer]:
@@ -138,12 +140,13 @@ class DAlgorithmAnswerRecognizer(AnswerRecognizer):
 
             for targetTag in targetTags:
                 for questionTag in questionTags:
-                    if calculateStringsJakkardsCoefficent(targetTag, questionTag) > self.MIN_TAG_SIMILARITY():
-                        similarTagsCount += 1
+                    if len(targetTag) > 1 and len(questionTag) > 1:
+                        if calculateStringsJakkardsCoefficent(targetTag, questionTag) > self.MIN_TAG_SIMILARITY():
+                            similarTagsCount += 1
 
             coefficent = calculateJakkardsCoefficent(len(targetTags), len(questionTags), similarTagsCount)
 
-            if similarTagsCount > lastSimilarTagsCount and coefficent > lastSimilarity:
+            if similarTagsCount >= lastSimilarTagsCount and coefficent >= lastSimilarity:
                 answers.append(Answer(qaPair.answer, self.get_key(), coefficent))
                 lastSimilarity = coefficent
                 lastSimilarTagsCount = similarTagsCount
