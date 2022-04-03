@@ -9,6 +9,7 @@ from asyncio import get_event_loop
 from asyncpgsa import pg
 from misc import dp
 from configs import DataBaseConfig
+from decorators import rate_limit
 
 from aiogram import executor
 from aiogram import Bot, types
