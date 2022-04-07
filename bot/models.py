@@ -65,5 +65,11 @@ class SessionLog(Base):
     successful = Column(Boolean, nullable=False)
 
 
-class Admin(Base):
+class QuestionAnswerGroup(Base):
+    qa_id = Column(Integer, ForeignKey('QuestionAnswer.id'), nullable=False)
+    group_title = Column(String, nullable=False)
+
+
+class UserRole(Base):
     user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
+    role_title = Column(String, nullable=False)

@@ -1,7 +1,7 @@
 from typing import List
 
 
-def getTagsByText(text : str) -> List[str]:
+def get_tags_by_text(text: str) -> List[str]:
     formatted = text
     formatted = formatted.replace("?", " ")
     formatted = formatted.replace(",", " ")
@@ -11,29 +11,23 @@ def getTagsByText(text : str) -> List[str]:
 
 
 class QAPair:
-    question : str
-    answer : str
+    question: str
+    answer: str
 
-    def __init__(self, question : str, answer : str) -> None:
+    def __init__(self, question: str, answer: str) -> None:
         self.question = question.lower()
         self.answer = answer
 
-
     def getTags(self) -> List[str]:
-        return getTagsByText(self.question)
+        return get_tags_by_text(self.question)
 
 
 class Answer:
-    answerText : str
-    algorithm_key : str
-    probability : float
+    answer_text: str
+    algorithm_key: str
+    probability: float
 
-
-    def __init__(self, answer : str, algorithm_key : str, chance : float) -> None:
-        self.answerText = answer
+    def __init__(self, answer: str, algorithm_key: str, chance: float) -> None:
+        self.answer_text = answer
         self.algorithm_key = algorithm_key
         self.probability = chance
-
-
-    def toString(self) -> str:
-        return "// " + self.answerText + " : " + str(self.probability)
