@@ -12,7 +12,7 @@ from models import (
     User,
     QuestionAnswer,
     SessionLog,
-    QuestionAnswerGroup,
+    QuestionAnswerFlag,
     UserRole
 )
 
@@ -128,9 +128,9 @@ class SessionLogDAO(BaseDAO):
         self.model = SessionLog
 
 
-class QuestionAnswerGroupDAO(BaseDAO):
+class QuestionAnswerFlagDAO(BaseDAO):
     def __init__(self) -> None:
-        self.model = QuestionAnswerGroup
+        self.model = QuestionAnswerFlag
 
 
 class UserRoleDAO(BaseDAO):

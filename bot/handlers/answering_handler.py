@@ -1,3 +1,4 @@
+from typing import List
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
@@ -5,17 +6,6 @@ from aiogram.types import Message
 
 from qa_recognition import router
 from services import user_service, qa_service
-
-from constants import ENROLLEE_ROLE_TITLE
-from constants import FULL_TIME_ROLE_TITLE
-from constants import PART_TIME_ROLE_TITLE
-from constants import EXTRAMURAL_ROLE_TITLE
-
-from constants import GENERAL_QA_GROUP_TITLE
-from constants import ENROLLEE_QA_GROUP_TITLE
-from constants import FULL_TIME_QA_GROUP_TITLE
-from constants import PART_TIME_QA_GROUP_TITLE
-from constants import EXTRAMURAL_QA_GROUP_TITLE
 
 from DAO import SessionLogDAO
 from keyboards import create_yes_no_kb, create_remove_kb
@@ -28,20 +18,13 @@ class AnsweringFSM(StatesGroup):
 
 async def wait_for_question(message: Message, state: FSMContext):
     if await user_service.has_user_record(message.from_user.id):
-        user_roles = await user_service.get_user_roles(message.from_user.id)
-        qa_pairs = await qa_service.get_qa_pairs_by_group(GENERAL_QA_GROUP_TITLE)
+        qa_pairs = []
 
-        if user_roles.__contains__(FULL_TIME_ROLE_TITLE):
-            qa_pairs += await qa_service.get_qa_pairs_by_group(FULL_TIME_QA_GROUP_TITLE)
+        user_roles = await user_service.get_roles(message.from_user.id)
+        qa_flags =  get_qa_flags_by_user_roles(user_roles)
 
-        if user_roles.__contains__(PART_TIME_ROLE_TITLE):
-            qa_pairs += await qa_service.get_qa_pairs_by_group(PART_TIME_QA_GROUP_TITLE)
-
-        if user_roles.__contains__(EXTRAMURAL_ROLE_TITLE):
-            qa_pairs += await qa_service.get_qa_pairs_by_group(EXTRAMURAL_QA_GROUP_TITLE)
-
-        if user_roles.__contains__(ENROLLEE_ROLE_TITLE):
-            qa_pairs += await qa_service.get_qa_pairs_by_group(ENROLLEE_QA_GROUP_TITLE)
+        for flag in qa_flags:
+            qa_pairs += await qa_service.get_qa_pairs_by_flag(flag)
 
         answer = await router.get_most_relevant_answer(message.text, qa_pairs)
 
@@ -54,6 +37,43 @@ async def wait_for_question(message: Message, state: FSMContext):
             await bot.send_message(message.from_user.id, "Вас устроил ответ на ваш вопрос?", reply_markup=create_yes_no_kb())
         else:
             await message.reply("Ответ на данный вопрос не найден!")
+
+
+def get_qa_flags_by_user_roles(user_roles: List[str]) -> List[str]:
+    qa_flags = [qa_service.GENERAL_QA_FLAG]
+
+    if user_roles.__contains__(user_service.ENROLLEE_GENERAL_ROLE_TITLE):
+        qa_flags.append(qa_service.ENROLLEE_QA_FLAG)
+
+    if user_roles.__contains__(user_service.ENROLLEE_FULL_TIME_ROLE_TITLE):
+        qa_flags.append(qa_service.ENROLLEE_QA_FLAG)
+        qa_flags.append(qa_service.ENROLLEE_FULL_TIME_QA_FLAG)
+
+    if user_roles.__contains__(user_service.ENROLLEE_PART_TIME_ROLE_TITLE):
+        qa_flags.append(qa_service.ENROLLEE_QA_FLAG)
+        qa_flags.append(qa_service.ENROLLEE_PART_TIME_QA_FLAG)
+
+    if user_roles.__contains__(user_service.ENROLLEE_EXTRAMURAL_ROLE_TITLE):
+        qa_flags.append(qa_service.ENROLLEE_QA_FLAG)
+        qa_flags.append(qa_service.ENROLLEE_EXTRAMURAL_QA_FLAG)
+
+    if user_roles.__contains__(user_service.ENROLLEE_EXTRAMURAL_ROLE_TITLE):
+        qa_flags.append(qa_service.STUDENT_QA_FLAG)
+        qa_flags.append(qa_service.STUDENT_FULL_TIME_QA_FLAG)
+
+    if user_roles.__contains__(user_service.STUDENT_FULL_TIME_ROLE_TITLE):
+        qa_flags.append(qa_service.STUDENT_QA_FLAG)
+        qa_flags.append(qa_service.STUDENT_FULL_TIME_QA_FLAG)
+
+    if user_roles.__contains__(user_service.STUDENT_PART_TIME_ROLE_TITLE):
+        qa_flags.append(qa_service.STUDENT_QA_FLAG)
+        qa_flags.append(qa_service.STUDENT_PART_TIME_QA_FLAG)
+
+    if user_roles.__contains__(user_service.STUDENT_EXTRAMURAL_ROLE_TITLE):
+        qa_flags.append(qa_service.STUDENT_QA_FLAG)
+        qa_flags.append(qa_service.STUDENT_EXTRAMURAL_QA_FLAG)
+
+    return qa_flags
 
 
 async def rate_positive(message: Message, state: FSMContext):

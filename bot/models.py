@@ -65,9 +65,9 @@ class SessionLog(Base):
     successful = Column(Boolean, nullable=False)
 
 
-class QuestionAnswerGroup(Base):
+class QuestionAnswerFlag(Base):
     qa_id = Column(Integer, ForeignKey('QuestionAnswer.id'), nullable=False)
-    group_title = Column(String, nullable=False)
+    flag = Column(String, nullable=False)
 
 
 class UserRole(Base):
