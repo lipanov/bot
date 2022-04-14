@@ -23,11 +23,11 @@ class QAPair:
 
 
 class Answer:
-    answer_text: str
+    qa_pair: QAPair
     algorithm_key: str
     probability: float
 
-    def __init__(self, answer: str, algorithm_key: str, chance: float) -> None:
-        self.answer_text = answer
+    def __init__(self, qa_pair: QAPair, algorithm_key: str, chance: float) -> None:
+        self.qa_pair = qa_pair
         self.algorithm_key = algorithm_key
         self.probability = chance
