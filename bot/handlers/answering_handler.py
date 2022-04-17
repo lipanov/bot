@@ -26,7 +26,7 @@ async def wait_for_question(message: Message, state: FSMContext):
         for flag in qa_flags:
             qa_pairs += await qa_service.get_qa_pairs_by_flag(flag)
 
-        answers = await ProbabilityRouter.get_most_relevant_answers(message.text, qa_pairs)
+        answers = await RatingRouter.get_most_relevant_answers(message.text, qa_pairs)
 
         answers_queue = []
 

@@ -7,7 +7,7 @@ def get_tags_by_text(text: str) -> List[str]:
     formatted = formatted.replace(",", " ")
     formatted = formatted.replace(".", " ")
     formatted = formatted.replace("!", " ")
-    return formatted.split()
+    return list(set(formatted.split()))
 
 
 class QAPair:
@@ -18,7 +18,7 @@ class QAPair:
         self.question = question.lower()
         self.answer = answer
 
-    def getTags(self) -> List[str]:
+    def get_tags(self) -> List[str]:
         return get_tags_by_text(self.question)
 
 

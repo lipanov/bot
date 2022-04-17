@@ -11,10 +11,10 @@ from qa_recognition.routers import Router
 
 class ProbabilityRouter(Router):
     recognizers = {
-        AAlgorithmAnswerRecognizer.KEY: AAlgorithmAnswerRecognizer(),
-        BAlgorithmAnswerRecognizer.KEY: BAlgorithmAnswerRecognizer(),
-        CAlgorithmAnswerRecognizer.KEY: CAlgorithmAnswerRecognizer(),
-        DAlgorithmAnswerRecognizer.KEY: DAlgorithmAnswerRecognizer()
+        AAlgorithmAnswerRecognizer.KEY: AAlgorithmAnswerRecognizer,
+        BAlgorithmAnswerRecognizer.KEY: BAlgorithmAnswerRecognizer,
+        CAlgorithmAnswerRecognizer.KEY: CAlgorithmAnswerRecognizer,
+        DAlgorithmAnswerRecognizer.KEY: DAlgorithmAnswerRecognizer
     }
 
     async def get_most_relevant_answer(question: str, qa_pairs: List[QAPair]) -> Answer:
@@ -31,13 +31,13 @@ class ProbabilityRouter(Router):
             answers = ProbabilityRouter.recognizers[key].recognize_answers(question, qa_pairs)
 
             for answer in answers:
-                has_duplicate = False
+                is_duplicate = False
 
-                for result_answer in result_answers:
-                    if result_answer.qa_pair == answer.qa_pair:
-                        has_duplicate = True
+                for appended_answer in result_answers:
+                    if appended_answer.qa_pair == answer.qa_pair:
+                        is_duplicate = True
 
-                if has_duplicate == False:
+                if is_duplicate == False:
                     result_answers.append(answer)
 
         return sorted(result_answers, key=lambda a: a.probability, reverse=True)

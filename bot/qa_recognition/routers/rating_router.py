@@ -13,10 +13,10 @@ from DAO import SessionLogDAO
 
 class RatingRouter(Router):
     recognizers = {
-        AAlgorithmAnswerRecognizer.KEY: AAlgorithmAnswerRecognizer(),
-        BAlgorithmAnswerRecognizer.KEY: BAlgorithmAnswerRecognizer(),
-        CAlgorithmAnswerRecognizer.KEY: CAlgorithmAnswerRecognizer(),
-        DAlgorithmAnswerRecognizer.KEY: DAlgorithmAnswerRecognizer()
+        AAlgorithmAnswerRecognizer.KEY: AAlgorithmAnswerRecognizer,
+        BAlgorithmAnswerRecognizer.KEY: BAlgorithmAnswerRecognizer,
+        CAlgorithmAnswerRecognizer.KEY: CAlgorithmAnswerRecognizer,
+        DAlgorithmAnswerRecognizer.KEY: DAlgorithmAnswerRecognizer
     }
 
     async def get_most_relevant_answer(question: str, qa_pairs: List[QAPair]) -> Answer:
