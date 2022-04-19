@@ -12,12 +12,13 @@ from models import (
     User,
     QuestionAnswer,
     SessionLog,
-    Admin
+    QuestionAnswerFlag,
+    UserRole
 )
 
 
 class BaseDAO:
-    async def _generate_select(self, joins: Optional[List[Tuple]] = (), **filters) -> sql.Select:
+    async def _generate_select(self, joins: Optional[List[Tuple]]=(), **filters) -> sql.Select:
         """
         :param filters: fields to filter
 
@@ -56,14 +57,14 @@ class BaseDAO:
         ).values(**fields)
         return await pg.fetchrow(query)
 
-    async def get_or_create(self, joins: Optional[List[Tuple]] = (), **fields) -> Record:
+    async def get_or_create(self, joins: Optional[List[Tuple]]=(), **fields) -> Record:
         record = await self.get(joins, **fields)
         if not record:
             record = await self.create(**fields)
 
         return record
 
-    async def get(self, joins: Optional[List] = (), **fields) -> Record:
+    async def get(self, joins: Optional[List]=(), **fields) -> Record:
         """
         :param joins: list of joins
         :param fields: fields to filter
@@ -73,7 +74,7 @@ class BaseDAO:
         query = await self._generate_select(joins=joins, **fields)
         return await pg.fetchrow(query)
 
-    async def get_many(self, joins: Optional[List] = (), **fields) -> List[Record]:
+    async def get_many(self, joins: Optional[List]=(), **fields) -> List[Record]:
         """
         :param joins: list of joins
         :param fields: fields to filter
@@ -98,7 +99,7 @@ class BaseDAO:
         """
         :param record_id: database record ID
         """
-        query = sql.delete(User).where(self.model.id == record_id)
+        query = sql.delete(self.model).where(self.model.id == record_id)
         return await pg.fetchrow(query)
 
 
@@ -127,6 +128,11 @@ class SessionLogDAO(BaseDAO):
         self.model = SessionLog
 
 
-class AdminDAO(BaseDAO):
+class QuestionAnswerFlagDAO(BaseDAO):
     def __init__(self) -> None:
-        self.model = Admin
+        self.model = QuestionAnswerFlag
+
+
+class UserRoleDAO(BaseDAO):
+    def __init__(self) -> None:
+        self.model = UserRole
