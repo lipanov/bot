@@ -11,8 +11,9 @@ from sqlalchemy import sql
 from models import (
     User,
     QuestionAnswer,
-    SessionLog,
     QuestionAnswerFlag,
+    QuestionAnswerTag,
+    SessionLog,
     UserRole
 )
 
@@ -123,14 +124,19 @@ class QuestionAnswerDAO(BaseDAO):
         self.model = QuestionAnswer
 
 
-class SessionLogDAO(BaseDAO):
-    def __init__(self) -> None:
-        self.model = SessionLog
-
-
 class QuestionAnswerFlagDAO(BaseDAO):
     def __init__(self) -> None:
         self.model = QuestionAnswerFlag
+
+
+class QuestionAnswerTagDAO(BaseDAO):
+    def __init__(self) -> None:
+        self.model = QuestionAnswerTag
+
+
+class SessionLogDAO(BaseDAO):
+    def __init__(self) -> None:
+        self.model = SessionLog
 
 
 class UserRoleDAO(BaseDAO):

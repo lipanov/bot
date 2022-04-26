@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message
 
-from qa_recognition.routers import RatingRouter, ProbabilityRouter
+from qa_recognition.routers import RatingRouter
 from services import user_service, qa_service
 
 from DAO import SessionLogDAO
@@ -126,7 +126,7 @@ async def next_answer(message: Message, state: FSMContext):
             data["answers_queue"] = answers_queue
             data["algorithm"] = str(answer.algorithm_key)
 
-        await bot.send_message(message.from_user.id, answer.qa_pair.answer)
+        question_message = await bot.send_message(message.from_user.id, answer.qa_pair.answer)
 
         await AnsweringFSM.waiting_for_rate.set()
         await bot.send_message(message.from_user.id, "Вас устроил ответ на ваш вопрос?", reply_markup=create_yes_no_kb())
@@ -146,6 +146,6 @@ async def save_rate(successful: bool, message: Message, state: FSMContext):
             await session_log_DAO.create(user_id=user_id, algorithm=algorithm, successful=successful)
 
 
-def register_answering_handlers(dp: Dispatcher):
+def register_answering_handler(dp: Dispatcher):
     dp.register_message_handler(wait_for_question, state=None)
     dp.register_message_handler(wait_for_rate, state=AnsweringFSM.waiting_for_rate)

@@ -94,7 +94,7 @@ async def wait_for_edu_form(message: Message, state: FSMContext):
         await bot.send_message(message.from_user.id, "Неккоректно введены данные, попробуйте ещё раз.")
 
 
-def register_welcome_handlers(dp: Dispatcher):
+def register_welcome_handler(dp: Dispatcher):
     dp.register_message_handler(start_command, commands=["start"])
     dp.register_message_handler(welcome, state=WelcomeUserFSM.welcome)
     dp.register_message_handler(wait_for_name, state=WelcomeUserFSM.waiting_for_name)

@@ -3,7 +3,7 @@ from typing import List
 
 from qa_recognition.qa import QAPair
 
-from DAO import QuestionAnswerDAO, QuestionAnswerFlagDAO
+from DAO import QuestionAnswerDAO, QuestionAnswerFlagDAO, QuestionAnswerTagDAO
 
 GENERAL_QA_FLAG = 'Общие'
 
@@ -49,13 +49,44 @@ async def add_flag(qa_id: int, flag: str):
         await question_answer_flag_DAO.create(qa_id=qa_id, flag=flag)
 
 
-async def get_or_create_qa_record(question: str, answer: str) -> Record:
+async def get_tags(qa_id: int) -> List[str]:
+    question_answer_tag_DAO = QuestionAnswerTagDAO()
+    tags = []
+    qa_tag_records = await question_answer_tag_DAO.get_many(qa_id=qa_id)
+
+    for record in qa_tag_records:
+        record_dict = dict(record)
+        tags.append(record_dict["QuestionAnswerTag_tag"])
+
+    return tags
+
+
+async def set_tags(qa_id: int, tags: List[str]):
+    question_answer_tag_DAO = QuestionAnswerTagDAO()
+
+    await clear_tags(qa_id)
+    
+    for tag in tags:
+        await question_answer_tag_DAO.create(qa_id=qa_id, tag=tag)
+
+
+async def clear_tags(qa_id: int):
+    question_answer_tag_DAO = QuestionAnswerTagDAO()
+
+    qa_tag_records = await question_answer_tag_DAO.get_many(qa_id=qa_id)
+    ids = [dict(record)["QuestionAnswerTag_id"] for record in qa_tag_records]
+
+    for id in ids:
+        await question_answer_tag_DAO.delete_by_id(id)
+
+
+async def get_or_create_qa(question: str, answer: str) -> Record:
     question_answer_DAO = QuestionAnswerDAO()
     qa_record = await question_answer_DAO.get_or_create(question=question, answer=answer)
     return qa_record
 
 
-async def has_qa_record(id: int) -> bool:
+async def has_qa(id: int) -> bool:
     qa_record = await get_qa_record(id=id)
     return qa_record != None
 
@@ -87,11 +118,11 @@ async def get_qa_records_by_flag(flag: str) -> List[Record]:
         return qa_records
 
 
-async def remove_qa_record(id: int):
+async def remove_qa(id: int):
     question_answer_DAO = QuestionAnswerDAO()
     question_answer_flag_DAO = QuestionAnswerFlagDAO()
 
-    if await has_qa_record(id):
+    if await has_qa(id):
         qa_record = await question_answer_DAO.get(id=id)
         qa_record_dict = dict(qa_record)
 
@@ -101,26 +132,37 @@ async def remove_qa_record(id: int):
             qa_flag_record_dict = dict(qa_flag_record)
             await question_answer_flag_DAO.delete_by_id(int(qa_flag_record_dict["QuestionAnswerFlag_id"]))
 
+        await clear_tags(id)
         await question_answer_DAO.delete_by_id(int(qa_record_dict["QuestionAnswer_id"]))
 
 
 async def get_all_qa_pairs() -> List[QAPair]:
     question_answer_DAO = QuestionAnswerDAO()
     qa_records = await question_answer_DAO.get_many()
-    qa_pairs = qa_records_to_pairs(qa_records)
+    qa_pairs = await qa_records_to_pairs(qa_records)
     return qa_pairs
 
 
 async def get_qa_pairs_by_flag(flag: str):
-    qa_pairs = qa_records_to_pairs(await get_qa_records_by_flag(flag))
+    qa_pairs = await qa_records_to_pairs(await get_qa_records_by_flag(flag))
     return qa_pairs
 
 
-def qa_records_to_pairs(qa_records: List[Record]) -> List[QAPair]:
+async def qa_records_to_pairs(records: List[Record]) -> List[QAPair]:
     qa_pairs = []
-    if qa_records != None:
-        for qa_record in qa_records:
-            qa_record_dict = dict(qa_record)
-            qa_pairs.append(QAPair(qa_record_dict["QuestionAnswer_question"], qa_record_dict["QuestionAnswer_answer"]))
+
+    for record in records:
+        qa_pairs.append(await qa_record_to_pair(record))
 
     return qa_pairs
+
+
+async def qa_record_to_pair(record: Record) -> QAPair:
+    record_dict = dict(record)
+
+    id = record_dict["QuestionAnswer_id"]
+    question = record_dict["QuestionAnswer_question"]
+    answer = record_dict["QuestionAnswer_answer"]
+    tags = await get_tags(id)
+
+    return QAPair(id, question, answer, tags)
