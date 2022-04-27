@@ -20,7 +20,7 @@ async def set_qa_tags(message: Message, state: FSMContext):
         has_required_role = await user_service.has_role(message.from_user.id, user_service.ADMIN_ROLE_TITLE)
 
         if has_required_role:
-            await bot.send_message(message.from_user.id, "Введите id пары вопрос-ответ, для которой хотите добавить ключевые.")
+            await bot.send_message(message.from_user.id, "Введите id пары вопрос-ответ, для которой хотите добавить ключевые слова.")
             await QATagsSetFSM.waiting_for_id.set()
         else:
             await bot.send_message(message.from_user.id, "Недостаточно прав.")

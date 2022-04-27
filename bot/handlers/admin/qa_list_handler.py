@@ -11,14 +11,12 @@ async def show_question_answer_list(message: Message):
 
         if has_required_role:
             qa_list_message = "Список пар вопрос-ответ:\n"
-            qa_records = await qa_service.get_all_qa_records()
+            qa_pairs = await qa_service.get_all_qa_pairs()
 
-            for qa_record in qa_records:
-                qa_record_dict = dict(qa_record)
-
-                qa_record_row = str(qa_record_dict["QuestionAnswer_id"]) + ". "
-                qa_record_row += str(qa_record_dict["QuestionAnswer_question"]) + " "
-                qa_flags = await qa_service.get_qa_flags(qa_record_dict["QuestionAnswer_id"])
+            for qa in qa_pairs:
+                qa_record_row = str(qa.id) + ". "
+                qa_record_row += str(qa.question) + " "
+                qa_flags = await qa_service.get_qa_flags(qa.id)
 
                 if len(qa_flags) > 0:
                     qa_groups_list = "( "

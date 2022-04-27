@@ -12,7 +12,7 @@ from asyncpgsa import pg
 
 from configs import DataBaseConfig
 
-from handlers import answering_handler, welcome_handler
+from handlers import answering_handler, welcome_handler, change_language_handler
 
 from handlers.admin import (
     qa_add_handler,
@@ -57,6 +57,8 @@ if __name__ == '__main__':
 
     qa_network_train_handler.register_qa_network_train_handler(dp)
     qa_network_reset_handler.register_qa_network_train_handler(dp)
+
+    change_language_handler.register_change_language_handler(dp)
 
     answering_handler.register_answering_handler(dp)
 

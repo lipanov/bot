@@ -1,28 +1,43 @@
+from email import message
 from asyncpg import Record
 from typing import List
+
+from localization import RU_KEY, EN_KEY
+
 from DAO import UserDAO, UserRoleDAO
 
-ENROLLEE_GENERAL_ROLE_TITLE = 'Абитуриент'
-ENROLLEE_FULL_TIME_ROLE_TITLE = 'Абитуриент (очная)'
-ENROLLEE_PART_TIME_ROLE_TITLE = 'Абитуриент (очно-заочная)'
-ENROLLEE_EXTRAMURAL_ROLE_TITLE = 'Абитуриент (заочная)'
+ENROLLEE_ROLE_TITLE = 'Абитуриент'
+ENROLLEE_FULL_TIME_ROLE_TITLE = 'Абитуриент/Очная'
+ENROLLEE_PART_TIME_ROLE_TITLE = 'Абитуриент/Очно-заочная'
+ENROLLEE_EXTRAMURAL_ROLE_TITLE = 'Абитуриент/Заочная'
 
-STUDENT_FULL_TIME_ROLE_TITLE = 'Студент (очная)'
-STUDENT_PART_TIME_ROLE_TITLE = 'Студент (очно-заочная)'
-STUDENT_EXTRAMURAL_ROLE_TITLE = 'Студент (заочная)'
+STUDENT_ROLE_TITLE = 'Студент'
+STUDENT_FULL_TIME_ROLE_TITLE = 'Студент/Очная'
+STUDENT_PART_TIME_ROLE_TITLE = 'Студент/Очно-заочная'
+STUDENT_EXTRAMURAL_ROLE_TITLE = 'Студент/Заочная'
 
 ADMIN_ROLE_TITLE = 'Администратор'
 
-ROLE_TITLES = {
-    ENROLLEE_GENERAL_ROLE_TITLE,
+WHO_ROLE_TITLES = [
+    ENROLLEE_ROLE_TITLE,
     ENROLLEE_FULL_TIME_ROLE_TITLE,
     ENROLLEE_PART_TIME_ROLE_TITLE,
     ENROLLEE_EXTRAMURAL_ROLE_TITLE,
     STUDENT_FULL_TIME_ROLE_TITLE,
     STUDENT_PART_TIME_ROLE_TITLE,
-    STUDENT_EXTRAMURAL_ROLE_TITLE,
+    STUDENT_EXTRAMURAL_ROLE_TITLE
+]
+
+LANGUAGE_KEYS = [
+    RU_KEY,
+    EN_KEY
+]
+
+STAFF_ROLE_TITLES = [
     ADMIN_ROLE_TITLE
-}
+]
+
+ROLE_TITLES = WHO_ROLE_TITLES + LANGUAGE_KEYS + STAFF_ROLE_TITLES
 
 
 async def has_user_record(tg_id: int) -> bool:
@@ -81,3 +96,47 @@ async def add_role(tg_id: int, role_title: str):
 
     user_role_DAO = UserRoleDAO()
     await user_role_DAO.create(user_id=user_record_dict["User_id"], role_title=role_title)
+
+
+async def remove_role(tg_id: int, role_title: str):
+    if await has_user_record(tg_id):
+        if await has_role(tg_id, role_title):
+            user_record = await get_user_record(tg_id)
+            user_record_dict = dict(user_record)
+            user_id = user_record_dict["User_id"]
+
+            user_role_DAO = UserRoleDAO()
+            user_role_record = await user_role_DAO.get(user_id=user_id, role_title=role_title)
+            user_role_record_dict = dict(user_role_record)
+            user_role_id = user_role_record_dict['UserRole_id']
+
+        await user_role_DAO.delete_by_id(user_role_id)
+
+
+async def get_user_language_key(tg_id) -> str:
+    role_titles = await get_roles(tg_id)
+
+    for title in role_titles:
+        if title in LANGUAGE_KEYS:
+            return title
+    
+    await change_language_for_user(tg_id, RU_KEY)
+    return RU_KEY
+
+
+async def change_language_for_user(tg_id: int, language_key: str):
+    await change_role_for_user(tg_id, language_key, LANGUAGE_KEYS)
+
+
+async def change_who_for_user(tg_id: int, who_role_title: str):
+    await change_role_for_user(tg_id, who_role_title, WHO_ROLE_TITLES)
+
+
+async def change_role_for_user(tg_id: int, role_title: str, role_titles: List[str]):
+    if role_title in role_titles:
+        if await has_user_record(tg_id):
+            for title in role_titles:
+                if await has_role(tg_id, title):
+                    await remove_role(tg_id, title)
+
+            await add_role(tg_id, role_title)

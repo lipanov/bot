@@ -105,7 +105,7 @@ class NetworkAnswerRecognizer(AnswerRecognizer):
             if self.has_model():
                 qa_ids = pd.read_csv(self.QA_IDS_PATH)
 
-                output = self.classifier.predict_raw_output(question)
+                output = self.classifier.predict_raw_output(question.lower())
                 argmax = torch.argmax(output.logits, dim=1).cpu().numpy()[0]
 
                 predictions = output.logits.cpu().detach()[0]

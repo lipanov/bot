@@ -24,13 +24,14 @@ async def show_question_answer(message: Message):
 
 async def wait_for_id(message: Message, state: FSMContext):
     if str.isdigit(message.text):
-        if await qa_service.has_qa(int(message.text)):
-            qa_record = await qa_service.get_qa_record(int(message.text))
-            qa_record_dict = dict(qa_record)
+        qa_id = int(message.text)
 
-            qa_info = "ID: " + str(qa_record_dict["QuestionAnswer_id"]) + "\n\n"
-            qa_info += "Вопрос: " + str(qa_record_dict["QuestionAnswer_question"]) + "\n\n"
-            qa_info += "Ответ: " + str(qa_record_dict["QuestionAnswer_answer"])
+        if await qa_service.has_qa(qa_id):
+            qa_pair = await qa_service.get_qa_pair(qa_id)
+
+            qa_info = "ID: " + str(qa_pair.id) + "\n\n"
+            qa_info += "Вопрос: " + str(qa_pair.question) + "\n\n"
+            qa_info += "Ответ: " + str(qa_pair.answer)
 
             await bot.send_message(message.from_user.id, qa_info, parse_mode="Markdown")
             await state.finish()

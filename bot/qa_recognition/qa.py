@@ -2,7 +2,7 @@ from typing import List
 
 
 def split_by_words(text: str) -> List[str]:
-    formatted = text
+    formatted = text.lower()
     formatted = formatted.replace("?", " ")
     formatted = formatted.replace(",", " ")
     formatted = formatted.replace(".", " ")
@@ -18,7 +18,7 @@ class QAPair:
 
     def __init__(self, id: int, question: str, answer: str, tags: List[str] = []) -> None:
         self.id = id
-        self.question = question.lower()
+        self.question = question
         self.answer = answer
         self.tags = tags
 
