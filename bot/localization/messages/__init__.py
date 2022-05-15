@@ -21,6 +21,13 @@ def invalid_data_try_again_message(language_key: str) -> str:
     return invalid_data_message(language_key) + " " + try_again_message(language_key)
 
 
+def back_word(language_key: str) -> str:
+    messages = {RU_KEY: "Назад",
+                EN_KEY: "Back"}
+
+    return messages[language_key]
+
+
 def yes_word(language_key: str) -> str:
     messages = {RU_KEY: "Да",
                 EN_KEY: "Yes"}
