@@ -12,13 +12,17 @@ from asyncpgsa import pg
 
 from configs import DataBaseConfig
 
-from handlers import answering_handler, welcome_handler
+from handlers import answering_handler, welcome_handler, change_language_handler
 
 from handlers.admin import (
-    add_question_answer_handler,
-    remove_question_answer_handler,
-    show_question_answer_handler,
-    show_question_answer_list_handler
+    qa_add_handler,
+    qa_remove_handler,
+    qa_list_handler,
+    qa_show_handler,
+    qa_tags_set_handler,
+    qa_tags_clear_handler,
+    qa_network_train_handler,
+    qa_network_reset_handler
 )
 
 from misc import dp
@@ -40,14 +44,23 @@ async def init_connection():
 
 
 if __name__ == '__main__':
-    welcome_handler.register_welcome_handlers(dp)
+    welcome_handler.register_welcome_handler(dp)
 
-    add_question_answer_handler.register_add_qa_handlers(dp)
-    remove_question_answer_handler.register_remove_qa_handlers(dp)
-    show_question_answer_handler.register_show_qa_handlers(dp)
-    show_question_answer_list_handler.register_show_qa_list_handlers(dp)
+    qa_add_handler.register_qa_add_handler(dp)
+    qa_remove_handler.register_qa_remove_handler(dp)
 
-    answering_handler.register_answering_handlers(dp)
+    qa_list_handler.register_qa_list_handler(dp)
+    qa_show_handler.register_qa_show_handler(dp)
+
+    qa_tags_set_handler.register_qa_tags_set_handler(dp)
+    qa_tags_clear_handler.register_qa_tags_clear_handler(dp)
+
+    qa_network_train_handler.register_qa_network_train_handler(dp)
+    qa_network_reset_handler.register_qa_network_train_handler(dp)
+
+    change_language_handler.register_change_language_handler(dp)
+
+    answering_handler.register_answering_handler(dp)
 
     event_loop = get_event_loop()
     event_loop.run_until_complete(init_connection())

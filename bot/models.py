@@ -52,6 +52,16 @@ class QuestionAnswer(Base):
     answer = Column(String, nullable=False)
 
 
+class QuestionAnswerFlag(Base):
+    qa_id = Column(Integer, ForeignKey('QuestionAnswer.id'), nullable=False)
+    flag = Column(String, nullable=False)
+
+
+class QuestionAnswerTag(Base):
+    qa_id = Column(Integer, ForeignKey('QuestionAnswer.id'), nullable=False)
+    tag = Column(String, nullable=False)
+
+
 class SessionLog(Base):
     """
     Session log class for recording logs of user interaction with the bot.
@@ -63,11 +73,6 @@ class SessionLog(Base):
     user_id = Column(Integer, ForeignKey('User.id'), nullable=False)
     algorithm = Column(String, nullable=False)
     successful = Column(Boolean, nullable=False)
-
-
-class QuestionAnswerFlag(Base):
-    qa_id = Column(Integer, ForeignKey('QuestionAnswer.id'), nullable=False)
-    flag = Column(String, nullable=False)
 
 
 class UserRole(Base):

@@ -4,14 +4,6 @@ from aiogram.types import KeyboardButton
 from aiogram.types import ReplyKeyboardRemove
 
 
-def create_yes_no_kb() -> ReplyKeyboardMarkup:
-    yes_button = KeyboardButton("Да")
-    no_button = KeyboardButton("Нет")
-    kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    kb.row(yes_button, no_button)
-    return kb
-
-
 def create_list_kb(str_list: List[str]) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardMarkup(resize_keyboard=True)
 

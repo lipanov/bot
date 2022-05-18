@@ -1,8 +1,8 @@
 from typing import List
 
 
-def get_tags_by_text(text: str) -> List[str]:
-    formatted = text
+def split_by_words(text: str) -> List[str]:
+    formatted = text.lower()
     formatted = formatted.replace("?", " ")
     formatted = formatted.replace(",", " ")
     formatted = formatted.replace(".", " ")
@@ -11,15 +11,19 @@ def get_tags_by_text(text: str) -> List[str]:
 
 
 class QAPair:
+    id: int
     question: str
     answer: str
+    tags: List[str]
 
-    def __init__(self, question: str, answer: str) -> None:
-        self.question = question.lower()
+    def __init__(self, id: int, question: str, answer: str, tags: List[str] = []) -> None:
+        self.id = id
+        self.question = question
         self.answer = answer
+        self.tags = tags
 
-    def get_tags(self) -> List[str]:
-        return get_tags_by_text(self.question)
+    def get_words(self) -> List[str]:
+        return split_by_words(self.question)
 
 
 class Answer:

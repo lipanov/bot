@@ -1,0 +1,4 @@
+RU_KEY = "RU"
+EN_KEY = "EN"
+
+LANGUAGE_KEYS = [RU_KEY, EN_KEY]
