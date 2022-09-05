@@ -5,6 +5,7 @@ from qa_recognition.answer_recognizers import AAlgorithmAnswerRecognizer
 from qa_recognition.answer_recognizers import BAlgorithmAnswerRecognizer
 from qa_recognition.answer_recognizers import CAlgorithmAnswerRecognizer
 from qa_recognition.answer_recognizers import DAlgorithmAnswerRecognizer
+from qa_recognition.answer_recognizers import NetworkAnswerRecognizer
 
 from qa_recognition.routers import Router
 
@@ -16,7 +17,8 @@ class RatingRouter(Router):
         AAlgorithmAnswerRecognizer.KEY: AAlgorithmAnswerRecognizer(),
         BAlgorithmAnswerRecognizer.KEY: BAlgorithmAnswerRecognizer(),
         CAlgorithmAnswerRecognizer.KEY: CAlgorithmAnswerRecognizer(),
-        DAlgorithmAnswerRecognizer.KEY: DAlgorithmAnswerRecognizer()
+        DAlgorithmAnswerRecognizer.KEY: DAlgorithmAnswerRecognizer(),
+        NetworkAnswerRecognizer.KEY: NetworkAnswerRecognizer()
     }
 
     async def get_most_relevant_answer(question: str, qa_pairs: List[QAPair]) -> Answer:
@@ -50,12 +52,14 @@ class RatingRouter(Router):
 
         return algorithm_keys
 
-    async def load_ratings() -> Dict[str, int]:
+    async def load_ratings() -> Dict[str, float]:
         session_log_DAO = SessionLogDAO()
         ratings = {}
 
         for key in RatingRouter.recognizers:
-            ratings[key] = 0
+            ratings[key] = [1, 5]
+            if key == "Network":
+                ratings[key] = [500, 5]
 
         session_log_records = await session_log_DAO.get_many()
 
@@ -64,13 +68,14 @@ class RatingRouter(Router):
                 session_log_record_dict = dict(session_log_record)
 
                 if not(session_log_record_dict["SessionLog_algorithm"] in ratings):
-                    ratings[session_log_record_dict["SessionLog_algorithm"]] = 0
+                    ratings[session_log_record_dict["SessionLog_algorithm"]] = [1, 5]
 
                 successful = bool(session_log_record_dict["SessionLog_successful"])
 
                 if successful:
-                    ratings[session_log_record_dict["SessionLog_algorithm"]] += 1
+                    ratings[session_log_record_dict["SessionLog_algorithm"]][0] += 1
+                    ratings[session_log_record_dict["SessionLog_algorithm"]][1] += 1
                 else:
-                    ratings[session_log_record_dict["SessionLog_algorithm"]] -= 1
-
-        return ratings
+                    ratings[session_log_record_dict["SessionLog_algorithm"]][1] += 1
+        rating = {alg: rat[0]/rat[1] for alg, rat in ratings.items()}
+        return rating

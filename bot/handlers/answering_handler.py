@@ -1,4 +1,5 @@
 from typing import List
+import re
 
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
@@ -21,21 +22,27 @@ class AnsweringFSM(StatesGroup):
     waiting_for_rate = State()
 
 
+async def clear_str(row: str) -> str:
+    row = ''.join(re.findall(r'[a-zA-Zа-яА-Я ]', row))
+    return row
+
+
 async def wait_for_question(message: Message, state: FSMContext):
     if await user_service.has_user_record(message.from_user.id):
         qa_pairs = []
 
         user_roles = await user_service.get_roles(message.from_user.id)
-        qa_flags =  get_qa_flags_by_user_roles(user_roles)
+        qa_flags = get_qa_flags_by_user_roles(user_roles)
 
         for flag in qa_flags:
             qa_pairs += await qa_service.get_qa_pairs_by_flag(flag)
 
-        answers = await RatingRouter.get_most_relevant_answers(message.text, qa_pairs)
+        message_text = await clear_str(message.text)
+        answers = await RatingRouter.get_most_relevant_answers(message_text, qa_pairs)
 
         answers_queue = []
 
-        if len(answers) > 0:
+        if answers:
             answers_queue.append(answers[0])
 
             if len(answers) > 1:
@@ -142,7 +149,8 @@ async def next_answer(message: Message, state: FSMContext):
             data['answers_queue'] = answers_queue
             data['algorithm'] = str(answer.algorithm_key)
 
-        await bot.send_message(message.from_user.id, answer.qa_pair.answer)
+        await bot.send_message(message.from_user.id, f"Отвечал: {str(answer.algorithm_key)} "
+                                                     f"Текст: {answer.qa_pair.answer}")
 
         await AnsweringFSM.waiting_for_rate.set()
 

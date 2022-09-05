@@ -25,7 +25,7 @@ class NetworkAnswerRecognizer(AnswerRecognizer):
         self.init_classifier()
 
     def init_classifier(self):
-        if self.has_required_data():
+        if self.has_required_data() or True:
             qa_ids = pd.read_csv(self.QA_IDS_PATH)
 
             self.classifier = BertClassifier(
@@ -36,7 +36,8 @@ class NetworkAnswerRecognizer(AnswerRecognizer):
                     model_save_path=self.MODEL_PATH
                     )
 
-            if self.has_model():
+            if self.has_model() or True:
+                #self.classifier = torch.load(self.MODEL_PATH, map_location=torch.device('cpu'))
                 self.classifier.load_saved_model()
 
     def has_required_data(self) -> bool:

@@ -30,6 +30,7 @@ services:
     env_file:
       - envs/bot.env
       - envs/database.env
+    restart: always
   testing:
     build:
       context: .

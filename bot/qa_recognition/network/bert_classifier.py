@@ -50,7 +50,7 @@ class BertClassifier:
         self.model = BertForSequenceClassification.from_pretrained(model_path)
         self.tokenizer = BertTokenizer.from_pretrained(tokenizer_path)
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.model_save_path=model_save_path
+        self.model_save_path = model_save_path
         self.max_len = 512
         self.epochs = epochs
         self.out_features = self.model.bert.encoder.layer[1].output.dense.out_features
@@ -139,7 +139,7 @@ class BertClassifier:
         return os.path.exists(self.model_save_path)
 
     def load_saved_model(self):
-        self.model = torch.load(self.model_save_path)
+        self.model = torch.load(self.model_save_path, map_location=self.device)
 
     def train(self):
         best_accuracy = 0

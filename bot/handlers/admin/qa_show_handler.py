@@ -39,7 +39,7 @@ async def wait_for_id(message: Message, state: FSMContext):
             await bot.send_message(message.from_user.id, "Пара вопрос-ответ с таким id не найдена.")
             await state.finish()
     else:
-        await bot.send_message(message.from_user.id, "Неккоректно введены данные, попробуйте ещё раз.")
+        await bot.send_message(message.from_user.id, "Не корректно введены данные, попробуйте ещё раз.")
 
 
 def register_qa_show_handler(dp: Dispatcher):
