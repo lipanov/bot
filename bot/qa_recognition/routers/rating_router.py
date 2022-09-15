@@ -59,7 +59,7 @@ class RatingRouter(Router):
         for key in RatingRouter.recognizers:
             ratings[key] = [1, 5]
             if key == "Network":
-                ratings[key] = [500, 5]
+                ratings[key] = [1, 5]
 
         session_log_records = await session_log_DAO.get_many()
 
